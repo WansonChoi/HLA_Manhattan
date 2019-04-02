@@ -7,16 +7,19 @@
 ##
 
 
-make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yrange, hitsnp, r.data, yax, pointcolor = "#000000", topcolor = "#FF0000", arrowsnp="", hitsnpB="", hitsnpC="") {
+make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yrange, hitsnp, r.data, yax, 
+                                        p.color.Variant = "#999999", p.color.AA = "#FF0000", p.color.HLA = "#FFDF00", p.color.SNP = "#61C246",
+                                        topcolor = "#FF0000", arrowsnp="", hitsnpB="", hitsnpC="") {
 
     locus <- locus[order(-locus$LOG10P),]
+    # print(head(locus))
     
     par(mar=c(0,5.5,2,4))
     plot(0, xlim=c(min.pos, max.pos), ylim=c(0,yrange), xlab="", ylab="", main=title, axes=F)
 
     axis(2, at=yax, las=1, cex.axis=1.5)
     axis(1, at=seq(30,33,1)*1E6, labels=rep("",4),line=0.2)
-    mtext(text=bquote(-log[10]~italic("P")), side=2, at=(yrange/2), line=3.5, cex=1)
+    mtext(text=bquote(-log[10]~italic("P")), side=2, at=(yrange/2), line=3.5, cex=1.7)
 
     
     ## lines(c(min.pos, max.pos), c(0,0), lty="dashed", lwd=1, col="black")
@@ -39,8 +42,32 @@ make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yran
     # fillcolors = "#DCDCDC" # gainsboro / rbg(220,220,220)
     # fillcolors = "#778899" # lightslategrey / rgb(119,136,153) <- This one is better, i think.
 
-    points(locus$BP, -locus$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=pointcolor)
+    ### `locus` will be divided into 3 groups (2019. 04. 01.)
+    # 1. Normal Variants(Intergenic or Intragenic SNPs) : locus.Variants
+    # 2. HLA markers : locus.HLA
+    # 3. AA markers : locus.AA
+    # 4. HLA Intragenic SNPs : locus.SNP
 
+    col.label = locus[, 1]
+
+    f_AA = grepl("^AA_", col.label)
+    f_HLA = grepl("^HLA_", col.label)
+    f_SNP = grepl("^SNP(S)?_(.+)_", col.label)
+
+    f_HLA_Markers = (f_AA | f_HLA) | f_SNP
+    f_Variant = !f_HLA_Markers
+
+    locus.AA = locus[f_AA, ]
+    locus.HLA = locus[f_HLA, ]
+    locus.SNP = locus[f_SNP, ]
+    locus.Variant = locus[f_Variant, ]
+
+    points(locus.Variant$BP, -locus.Variant$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.Variant)
+    points(locus.SNP$BP, -locus.SNP$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.SNP)
+    points(locus.AA$BP, -locus.AA$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.AA)
+    points(locus.HLA$BP, -locus.HLA$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.HLA)
+
+    # (Top signal)
     # if (hitsnp != "") {
     #     hit <- locus[locus$SNP==hitsnp,]
     #     points(hit$BP, -hit$LOG10P, pch=23, cex=2.4, lwd=1.5, bg=topcolor)
@@ -102,7 +129,7 @@ make.fancy.locus.plot.bottom <- function(chr, min.pos, max.pos, pathToTheGeneBui
     ##
     ## axes, titles and legends
     ##
-    mtext(paste("Chromosome", chr, "position (Mb)", sep=" "), side=1, line=2.5)
+    mtext(paste("Chromosome", chr, "position (Mb)", sep=" "), side=1, line=2.5, cex=1.7)
     axis(1, at=seq(30,33,1)*1E6, labels=seq(30,33,1), cex.axis=1.5)
 
     ##
@@ -117,13 +144,15 @@ make.fancy.locus.plot.bottom <- function(chr, min.pos, max.pos, pathToTheGeneBui
     for ( i in 1:nrow(genes.in.locus) ) {
         genename = genes.in.locus[i,]$GENE
         # if (genename %in% strsplit("HLA-A HLA-C HLA-B TNF HLA-DRA HLA-DRB1 HLA-DQA1 HLA-DQB1 HLA-DPA1 HLA-DPB1", " ")[[1]]) {
-        if (genename %in% strsplit("HLA-A HLA-C HLA-B HLA-DRA HLA-DRB1 HLA-DQA1 HLA-DQB1 HLA-DPA1 HLA-DPB1", " ")[[1]]) {
-            genecols = strsplit("#00ab34 #c800a0 #7100c8 #0097c8 #c80000 #567200 #ecbd00 #FF0000 #0033F2"," ")[[1]]
+        if (genename %in% strsplit("HLA-A HLA-C HLA-B HLA-DRB1 HLA-DQA1 HLA-DQB1 HLA-DPA1 HLA-DPB1", " ")[[1]]) {
+            genecols = strsplit("#00ab34 #c800a0 #7100c8 #c80000 #567200 #ecbd00 #FF0000 #0033F2"," ")[[1]]
             # genecols = strsplit("#BF00EF black #00C418 black black #FF0000 black black black #0033F2"," ")[[1]]
+
             ## genecols = rep("black", 8)
             genetextcols = rep("black", 20)
+
             # genetips = c("upleft", "upleft", "upright", "downleft", "downleft", "upleft", "upright", "downright", "upright", "downright")
-            genetips = c("upleft", "upleft", "upright", "downleft", "upleft", "upright", "downright", "upright", "downright")
+            genetips = c("upleft", "upleft", "upright", "upleft", "upright", "downright", "upright", "downright")
             tiplen.y = boxheight / 2
             tiplen.x = (max.pos-min.pos)/75
             pickcol = genecols[j]
