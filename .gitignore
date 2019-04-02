@@ -1,1 +1,9 @@
 .DS_store
+
+# R
+.Rhistory
+.Rproj.user
+*.Rproj
+
+# Folders
+tests/
