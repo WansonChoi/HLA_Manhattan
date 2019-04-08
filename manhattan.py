@@ -57,12 +57,6 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
 
     ########## < Core Variables > ##########
 
-    std_MAIN_PROCESS_NAME = "\n[%s]: " % (os.path.basename(__file__))
-    std_MAIN_PROCESS_ERROR = "\n[%s::ERROR]: " % (os.path.basename(__file__))
-
-    print(std_MAIN_PROCESS_NAME + "Conducting Manhattan Plotting.")
-
-
     # Intermediate path.
     _out = _out if not _out.endswith('/') else _out.rstrip('/')
     if bool(os.path.dirname(_out)): os.makedirs(os.path.dirname(_out), exist_ok=True)
@@ -73,7 +67,7 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
 
 
     # Paths
-    p_src = "./"
+    p_src = "./src"
     p_data = "./data"
 
 
@@ -81,7 +75,7 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
     ########## < Dependency and Argument Checking > ##########
 
     if not isinstance(_results_assoc, list):
-        print(std_MAIN_PROCESS_ERROR + "The argument \"--logistic-result(-lr)\" wansn't given as list. Please check it again.\n")
+        print(std_ERROR_MAIN_PROCESS_NAME + "The argument \"--logistic-result(-lr)\" wansn't given as list. Please check it again.\n")
         sys.exit()
 
     # Logistic Regression
@@ -96,7 +90,7 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
 
         print("\n[{0}] : {1}\n".format(i, _results_assoc[i]))
 
-        t_lr = pd.read_table(_results_assoc[i], sep='\s+', engine='python', header=0, usecols=["SNP", "P"]).dropna().sort_values("P")
+        t_lr = pd.read_table(_results_assoc[i], sep='\s+', header=0, usecols=["SNP", "P"]).dropna().sort_values("P")
 
         # MARKER_set = t_lr.iloc[:, 0].tolist()
         # print(std_MAIN_PROCESS_NAME + "Marker Labels are \n{0}".format(MARKER_set))
