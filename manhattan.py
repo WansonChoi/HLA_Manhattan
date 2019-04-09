@@ -43,15 +43,15 @@ def HATK_manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", 
         _plot_label = " "
 
 
-    return manhattan(_results_assoc, _plot_label, _out, _hg,
-                     _pointcol="#778899", _topcol="#FF0000", _min_pos="29.60E6", _max_pos="33.2E6",
-                     _p_Rscript=which("Rscript"))
+    return manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topcol="#FF0000", _min_pos="29.60E6",
+                     _max_pos="33.2E6", _p_Rscript=which("Rscript"))
 
 
 
 
-def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topcol="#FF0000", _min_pos="29.60E6", _max_pos="33.2E6",
-              _p_Rscript=which("Rscript")):
+def manhattan(_assoc_result, _out, _hg, _plot_label = "",
+              _pointcol="#778899", _topcol="#FF0000", _min_pos="29.60E6", _max_pos="33.2E6",
+              _pontsize="15", _yaxis_unit = "10", _p_Rscript=which("Rscript")):
 
 
 
@@ -74,23 +74,23 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
 
     ########## < Dependency and Argument Checking > ##########
 
-    if not isinstance(_results_assoc, list):
+    if not isinstance(_assoc_result, list):
         print(std_ERROR_MAIN_PROCESS_NAME + "The argument \"--logistic-result(-lr)\" wansn't given as list. Please check it again.\n")
         sys.exit()
 
     # Logistic Regression
     print(std_MAIN_PROCESS_NAME + "Loading \".assoc.logistic\".\n")
-    print("{0} logistic regression results are given.\n".format(len(_results_assoc)))
+    print("{0} logistic regression results are given.\n".format(len(_assoc_result)))
 
 
     l_TOP_LABEL = []
     l_yaxis = []
 
-    for i in range(0, len(_results_assoc)):
+    for i in range(0, len(_assoc_result)):
 
-        print("\n[{0}] : {1}\n".format(i, _results_assoc[i]))
+        print("\n[{0}] : {1}\n".format(i, _assoc_result[i]))
 
-        t_lr = pd.read_table(_results_assoc[i], sep='\s+', header=0, usecols=["SNP", "P"]).dropna().sort_values("P")
+        t_lr = pd.read_table(_assoc_result[i], sep='\s+', header=0, usecols=["SNP", "P"]).dropna().sort_values("P")
 
         # MARKER_set = t_lr.iloc[:, 0].tolist()
         # print(std_MAIN_PROCESS_NAME + "Marker Labels are \n{0}".format(MARKER_set))
@@ -122,7 +122,7 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
 
 
 
-    export_lr = ','.join(_results_assoc)
+    export_ar = ','.join(_assoc_result)
     export_TOP_LABEL = ','.join(l_TOP_LABEL)
     export_yaxis = ','.join(l_yaxis)
 
@@ -140,9 +140,9 @@ def manhattan(_results_assoc, _plot_label, _out, _hg, _pointcol="#778899", _topc
     print(std_MAIN_PROCESS_NAME + "Plotting Manhattan.\n")
 
     command = [_p_Rscript, os.path.join(p_src, "manhattan_HLA_HATK.R"),
-               export_lr, re.escape(_plot_label), _out,
-               _pointcol, _topcol,
-               _min_pos, _max_pos, export_TOP_LABEL, export_yaxis,
+               export_ar, _out,
+               _pointcol, _pontsize, _topcol,
+               _min_pos, _max_pos, export_TOP_LABEL, export_yaxis, _yaxis_unit,
                _knownGene, p_src]
 
     command = ' '.join(command)
@@ -196,49 +196,21 @@ if __name__ == "__main__":
 
     parser.add_argument("-h", "--help", help="\nShow this help message and exit\n\n", action='help')
 
-    # parser.add_argument("--logistic-result", "-lr", help="\nOutput from logistic regression(\".assoc.logstic\").\n\n", nargs='+', required=True)
-    parser.add_argument("--results-assoc", "-ra", help="\nOutput from logistic regression(\".assoc.logstic\").\n\n", nargs='+', required=True)
-    parser.add_argument("--plot-label", "-pl", help="\nPlot Label\n\n", default="Manhattan Plot")
+    parser.add_argument("--assoc-result", "-ar", help="\nAssociation test result file(ex. *.assoc.logistic).\n\n", nargs='+', required=True)
+    parser.add_argument("--plot-label", "-pl", help="\nPlot Label\n\n", default="")
     parser.add_argument("--out", "-o", help="\nOuput file prefix\n\n", required=True)
 
     parser.add_argument("-hg", help="\nHuman Genome version(18, 19 or 38)\n\n", choices=["18", "19", "38"], metavar="hg", required=True)
-    # parser.add_argument("--knownGene", "-kg",  help="\nPath to knownGene.txt file\n\n", required=True)
 
     parser.add_argument("--point-color", "-pc", help="\nPoint color(ex. \"#778899\").\n\n", default="#778899")
     parser.add_argument("--top-color", "-tc", help="\nTop signal point color(ex. \"#FF0000\").\n\n", default="#FF0000")
 
-    # parser.add_argument("--Rsrc", help="\nTop signal point color(ex. \"#FF0000\").\n\n",
-    #                     default="src/HLA_Analysis/Plotting/manhattanplot/manhattan_HLA_HATK.R")
-
+    parser.add_argument("--point-size", "-ps", help="\nGeneral point size (default: 15).\n\n", default="15")
+    parser.add_argument("--yaxis-unit", "-yau", help="\nY axis value(-log10(x)) unit (default : 10).\n\n", default="10")
 
 
 
     ### for Testing
-
-    # (2018. 9. 24.)
-    # args = parser.parse_args(["-lr", "/Users/wansun/Dropbox/_Sync_MyLaptop/Data/HATK/data/HLA_Analysis/Plotting/manhattanplot/MarkerPanel.hg18.imgt370.AA.CODED.assoc.logistic",
-    #                           "-o", "/Users/wansun/Git_Projects/HATK/manhattan_2nd/manhattan_2nd_withPureKnownGene",
-    #                           "-pc", "#E0FFFF",
-    #                           "-kg", "/Users/wansun/Dropbox/_Sync_MyLaptop/Data/HATK/data/HLA_Analysis/Plotting/manhattanplot/known_genes/known_genes_soumya_chr6.hg18.txt"
-    #                           ])
-
-
-    # hg18 / imgt3320 / "Marker_Panel.hg18.imgt3320.MERGED.assoc.logistic"
-    # args = parser.parse_args(["-lr", "/Users/wansun/Git_Projects/HATK/HLA2MARKER_test/Marker_Panel.hg18.imgt3320.MERGED.assoc.logistic",
-    #                           "-o", "/Users/wansun/Git_Projects/HATK/manhattan_2nd/manhattan_2nd_HLA2MARKER_test_merged",
-    #                           "-pc", "#E0FFFF",
-    #                           "-kg", "/Users/wansun/Dropbox/_Sync_MyLaptop/Data/HATK/data/HLA_Analysis/Plotting/manhattanplot/known_genes/known_genes_soumya_chr6.hg18.txt"
-    #                           ])
-
-    # hg18 / imgt3320 / "Marker_Panel.hg18.imgt3320.AA.CODED.assoc.logistic", "Marker_Panel.hg18.imgt3320.HLA.assoc.logistic", "Marker_Panel.hg18.imgt3320.SNPS.CODED.assoc.logistic"
-    # args = parser.parse_args(["-lr",
-    #                           "/Users/wansun/Git_Projects/HATK/HLA2MARKER_test/Marker_Panel.hg18.imgt3320.AA.CODED.assoc.logistic",
-    #                           "/Users/wansun/Git_Projects/HATK/HLA2MARKER_test/Marker_Panel.hg18.imgt3320.HLA.assoc.logistic",
-    #                           "/Users/wansun/Git_Projects/HATK/HLA2MARKER_test/Marker_Panel.hg18.imgt3320.SNPS.CODED.assoc.logistic",
-    #                           "-o", "/Users/wansun/Git_Projects/HATK/manhattan_2nd/manhattan_2nd_HLA2MARKER_test_each",
-    #                           "-pc", "#E0FFFF",
-    #                           "-kg", "/Users/wansun/Dropbox/_Sync_MyLaptop/Data/HATK/data/HLA_Analysis/Plotting/manhattanplot/known_genes/known_genes_soumya_chr6.hg18.txt"
-    #                           ])
 
 
 
@@ -247,4 +219,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-    manhattan(args.results_assoc, args.plot_label, args.out, args.hg, _pointcol=args.point_color, _topcol=args.top_color)
+    manhattan(args.assoc_result, args.out, args.hg, _plot_label=args.plot_label, _pointcol=args.point_color, _topcol=args.top_color,
+              _pontsize=args.point_size, _yaxis_unit=args.yaxis_unit)
