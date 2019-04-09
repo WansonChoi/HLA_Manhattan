@@ -62,10 +62,10 @@ make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yran
     locus.SNP = locus[f_SNP, ]
     locus.Variant = locus[f_Variant, ]
 
-    points(locus.Variant$BP, -locus.Variant$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.Variant)
-    points(locus.SNP$BP, -locus.SNP$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.SNP)
-    points(locus.AA$BP, -locus.AA$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.AA)
-    points(locus.HLA$BP, -locus.HLA$LOG10P, pch=23, cex=1.2, lwd=0.2, bg=p.color.HLA)
+    points(locus.Variant$BP, -locus.Variant$LOG10P, pch=23, cex=1.5, lwd=0.2, bg=p.color.Variant)
+    points(locus.SNP$BP, -locus.SNP$LOG10P, pch=23, cex=1.5, lwd=0.2, bg=p.color.SNP)
+    points(locus.AA$BP, -locus.AA$LOG10P, pch=23, cex=1.5, lwd=0.2, bg=p.color.AA)
+    points(locus.HLA$BP, -locus.HLA$LOG10P, pch=23, cex=1.5, lwd=0.2, bg=p.color.HLA)
 
     # (Top signal)
     # if (hitsnp != "") {
