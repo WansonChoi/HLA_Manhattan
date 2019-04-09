@@ -18,7 +18,7 @@ make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yran
     plot(0, xlim=c(min.pos, max.pos), ylim=c(0,yrange), xlab="", ylab="", main=title, axes=F)
 
     axis(2, at=yax, las=1, cex.axis=1.5)
-    axis(1, at=seq(30,33,1)*1E6, labels=rep("",4),line=0.2)
+    # axis(1, at=seq(30,33,1)*1E6, labels=rep("",4),line=0.2)
     mtext(text=bquote(-log[10]~italic("P")), side=2, at=(yrange/2), line=3.5, cex=1.7)
 
     
