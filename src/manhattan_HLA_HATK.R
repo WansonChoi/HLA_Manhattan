@@ -42,7 +42,7 @@ source(file.path(p_src_, "assocplot_HATK.R"))
 pdf(paste0(out_, ".pdf"), width=16, height=9, pointsize=pointsize_) # `pointsize` is now manipulated by the argument 'pointsize_'. (2019. 04. 09.)
 
 NumberofLogistic = length(p_assoc.logsitic_)
-layout(matrix(1:(NumberofLogistic+1), (NumberofLogistic+1),1, byrow=TRUE), heights=c(rep(7, NumberofLogistic),2))
+layout(matrix(1:(NumberofLogistic+1), (NumberofLogistic+1),1, byrow=TRUE), heights=c(rep(7, NumberofLogistic), 2))
 # (2019. 04. 01.) One manhattan graph : One fancy buttom = 7 : 2
 
 # (2018. 8. 10.) No more `r.data` for colorRamp().
