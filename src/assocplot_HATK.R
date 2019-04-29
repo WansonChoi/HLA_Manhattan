@@ -8,7 +8,7 @@
 
 
 make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yrange, hitsnp, r.data, yax, 
-                                        p.color.Variant = "#999999", p.color.AA = "#FF0000", p.color.HLA = "#FFDF00", p.color.SNP = "#61C246",
+                                        p.color.Variant = "#999999", p.color.AA = "#DE7A22", p.color.HLA = "#F4CC70", p.color.SNP = "#6AB187",
                                         topcolor = "#FF0000", arrowsnp="", hitsnpB="", hitsnpC="") {
 
     locus <- locus[order(-locus$LOG10P),]
@@ -62,10 +62,10 @@ make.fancy.locus.plot.bare <- function(chr, title, locus, min.pos, max.pos, yran
     locus.SNP = locus[f_SNP, ]
     locus.Variant = locus[f_Variant, ]
 
-    points(locus.Variant$BP, -locus.Variant$LOG10P, pch=23, cex=1.5, lwd=0, bg=p.color.Variant)
-    points(locus.SNP$BP, -locus.SNP$LOG10P, pch=23, cex=1.5, lwd=0, bg=p.color.SNP)
-    points(locus.AA$BP, -locus.AA$LOG10P, pch=23, cex=1.5, lwd=0, bg=p.color.AA)
-    points(locus.HLA$BP, -locus.HLA$LOG10P, pch=23, cex=1.5, lwd=0, bg=p.color.HLA)
+    points(locus.Variant$BP, -locus.Variant$LOG10P, pch=23, cex=2.3, lwd=0, bg=p.color.Variant, col=p.color.Variant)
+    points(locus.SNP$BP, -locus.SNP$LOG10P, pch=23, cex=2.3, lwd=0, bg=p.color.SNP, col=p.color.SNP)
+    points(locus.AA$BP, -locus.AA$LOG10P, pch=23, cex=2.3, lwd=0, bg=p.color.AA, col=p.color.AA)
+    points(locus.HLA$BP, -locus.HLA$LOG10P, pch=23, cex=2.3, lwd=0, bg=p.color.HLA, col=p.color.HLA)
 
     # (Top signal)
     # if (hitsnp != "") {
